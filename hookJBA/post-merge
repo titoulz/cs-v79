@@ -1,0 +1,22 @@
+#!/bin/sh
+
+# Spécifiez l'emplacement de votre exécutable `mysql` et de `mysqldump`
+# Si vous avez installé XAMPP à l'emplacement par défaut, cela pourrait ressembler à ceci:
+MYSQL="C:/xampp/mysql/bin/mysql.exe"
+MYSQLDUMP="C:/xampp/mysql/bin/mysqldump.exe"
+
+#On récupère dans le fichier param.txt les différents paramètres
+#On récupère le nom de la base de données
+DB_NAME=$(cat paramBDD.txt | grep "DB_NAME" | cut -d "=" -f 2)
+#On récupère le nom de l'utilisateur
+DB_USER=$(cat paramBDD.txt | grep "DB_USER" | cut -d "=" -f 2)
+#On récupère le nom du fichier de dump par rapport au chemin du projet actuel
+DUMP_FILE="./sql/$DB_NAME.sql"
+
+# (Optionnel) Sauvegardez la base de données actuelle avant de restaurer
+"$MYSQLDUMP" -u $DB_USER $DB_NAME > "./sql/backup_$(date +%Y%m%d%H%M%S).sql"
+
+# Restaurez la base de données à partir du dump
+"$MYSQL" -u $DB_USER $DB_NAME < $DUMP_FILE
+
+exit 0
